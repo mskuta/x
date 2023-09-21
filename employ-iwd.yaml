@@ -1,0 +1,40 @@
+---
+- hosts: localhost
+  connection: local
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: employ-iwd | Install package
+      apt:
+        name: iwd
+        state: latest
+
+    - name: employ-iwd | Write configuration
+      copy:
+        dest: /etc/NetworkManager/conf.d/99-iwd.conf
+        content: |+
+          [device]
+          wifi.backend=iwd
+          wifi.iwd.autoconnect=false
+
+          [main]
+          iwd-config-path=auto
+
+    - name: employ-iwd | Stop service NetworkManager temporarily
+      service:
+        name: NetworkManager
+        state: stopped
+
+    - name: employ-iwd | Disable service wpa_supplicant
+      service:
+        name: wpa_supplicant
+        state: stopped
+        enabled: false
+
+    - name: employ-iwd | Restart service NetworkManager
+      service:
+        name: NetworkManager
+        state: restarted
+
+# vim: ts=2 sts=0 sw=2 et

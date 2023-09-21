@@ -1,0 +1,40 @@
+---
+- hosts: localhost
+  connection: local
+  become: true
+  gather_facts: false
+
+  vars:
+    # the following parameters should be changed to one's own
+    # preferences
+    group: {id: 404, name: nonet}
+    usernames: []
+    # nothing must be altered from here on
+    rule: -A OUTPUT -m owner --gid-owner {{ group['id'] }} -j DROP
+
+  tasks:
+    - name: nonet | Create group
+      group:
+        gid: "{{ group['id'] }}"
+        name: "{{ group['name'] }}"
+        system: true
+
+    - name: nonet | Add users to group
+      user:
+        name: "{{ item }}"
+        groups: ["{{ group['name'] }}"]
+        append: true
+      loop: "{{ usernames }}"
+
+    - name: nonet | Examine packet filter rules
+      command: "/usr/sbin/iptables -S"
+      register: rules
+      changed_when: false
+
+    # Ansible module "iptables" does not support iptables extension
+    # "owner", that is why module "command" is used
+    - name: nonet | Add packet filter rule
+      command: "/usr/sbin/iptables {{ rule }}"
+      when: rule not in rules.stdout
+
+# vim: ts=2 sts=0 sw=2 et

@@ -1,0 +1,82 @@
+---
+- hosts: localhost
+  connection: local
+  become: true
+  gather_facts: false
+
+  vars:
+    scriptpath: /usr/local/bin/apache2-defaultpage
+
+  handlers:
+    - name: apache2-defaultpage | Reread systemd configs
+      systemd:
+        daemon_reload: true
+
+  tasks:
+    - name: apache2-defaultpage | Install packages
+      apt:
+        pkg:
+          - wget
+          - jq
+          - cowsay
+        state: latest
+
+    - name: apache2-defaultpage | Create script
+      copy:
+        dest: "{{ scriptpath }}"
+        mode: '755'
+        content: |+
+          #!/usr/bin/env bash
+
+          set -e
+
+          PATH=$(getconf PATH):/usr/games
+          readonly htmlpath=$(mktemp -t)
+          cat \
+          	<(printf '<!DOCTYPE html>\n<html lang="en">\n<meta charset="utf-8"/>\n<pre>\n') \
+          	<(wget -O- --quiet 'https://www.reddit.com/r/showerthoughts/top.json?limit=1' | jq --raw-output '.data.children[0].data.title' | cowthink -fwww) \
+          	<(printf '</pre>\n</html>\n') \
+          	>"$htmlpath"
+          chmod +r "$htmlpath"
+          mv "$htmlpath" '/var/www/html/index.html'
+
+    - name: apache2-defaultpage | Create systemd service
+      copy:
+        dest: /etc/systemd/system/apache2-defaultpage.service
+        mode: '644'
+        content: |+
+          [Unit]
+          Description=Replace the default page of the Apache HTTP Server
+          After=network-online.target
+
+          [Service]
+          ExecStart={{ scriptpath }}
+          Type=oneshot
+
+      notify: apache2-defaultpage | Reread systemd configs
+
+    - name: apache2-defaultpage | Create systemd timer
+      copy:
+        dest: /etc/systemd/system/apache2-defaultpage.timer
+        mode: '644'
+        content: |+
+          [Unit]
+          Description=Replace the default page of the Apache HTTP Server every day
+
+          [Timer]
+          OnCalendar=daily
+          OnStartupSec=1min
+          Persistent=true
+
+          [Install]
+          WantedBy=timers.target
+
+      notify: apache2-defaultpage | Reread systemd configs
+
+    - name: apache2-defaultpage | Enable systemd timer
+      systemd:
+        name: apache2-defaultpage.timer
+        state: started
+        enabled: true
+
+# vim: ts=2 sts=0 sw=2 et
