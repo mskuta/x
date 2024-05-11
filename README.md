@@ -5,7 +5,6 @@
 * `dumpxpath.c` - Dump values from an XML document by using an XPath expression
 * `employ-iwd.yaml` - Ansible playbook to replace wpa_supplicant with iwd.
 * `employ-zramswap.yaml` - Ansible playbook to replace dphys-swapfile with zramswap.
-* `install-crystal.yaml` - Ansible playbook to install the Crystal programming language on Debian in accordance with the instructions on the homepage.
 * `nonet.yaml` - Ansible playbook to create a packet filtering rule that prevents programs, which are forced by sg(1) to run under a specific group account, from establishing any outgoing network connection.
 * `rirccfilter.gawk` - Extract IP ranges per country from RIR datasets
 * `synde.py` - Find synonyms for German terms
