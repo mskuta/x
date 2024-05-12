@@ -5,12 +5,12 @@
   gather_facts: false
 
   tasks:
-    - name: employ-iwd | Install package
+    - name: iwd | Install package
       apt:
         name: iwd
         state: latest
 
-    - name: employ-iwd | Write configuration
+    - name: iwd | Write configuration
       copy:
         dest: /etc/NetworkManager/conf.d/99-iwd.conf
         content: |+
@@ -21,18 +21,18 @@
           [main]
           iwd-config-path=auto
 
-    - name: employ-iwd | Stop service NetworkManager temporarily
+    - name: iwd | Stop service NetworkManager temporarily
       service:
         name: NetworkManager
         state: stopped
 
-    - name: employ-iwd | Disable service wpa_supplicant
+    - name: iwd | Disable service wpa_supplicant
       service:
         name: wpa_supplicant
         state: stopped
         enabled: false
 
-    - name: employ-iwd | Restart service NetworkManager
+    - name: iwd | Restart service NetworkManager
       service:
         name: NetworkManager
         state: restarted

@@ -5,37 +5,37 @@
   gather_facts: false
 
   handlers:
-    - name: employ-zramswap | Reload service zramswap
+    - name: zramswap | Reload service zramswap
       service:
         name: zramswap
         state: reloaded
 
   tasks:
-    - name: employ-zramswap | Install package
+    - name: zramswap | Install package
       apt:
         name: zram-tools
         state: latest
 
-    - name: employ-zramswap | Edit configuration (ALGO)
+    - name: zramswap | Edit configuration (ALGO)
       lineinfile:
         path: /etc/default/zramswap
         regexp: ^#?ALGO=
         line: ALGO=zstd
-      notify: employ-zramswap | Reload service zramswap
+      notify: zramswap | Reload service zramswap
 
-    - name: employ-zramswap | Edit configuration (PERCENT)
+    - name: zramswap | Edit configuration (PERCENT)
       lineinfile:
         path: /etc/default/zramswap
         regexp: ^#?PERCENT=
         line: PERCENT=5
-      notify: employ-zramswap | Reload service zramswap
+      notify: zramswap | Reload service zramswap
 
-    - name: employ-zramswap | Get rid of swapfile
+    - name: zramswap | Get rid of swapfile
       command:
         cmd: dphys-swapfile uninstall
       changed_when: false
 
-    - name: employ-zramswap | Disable service dphys-swapfile
+    - name: zramswap | Disable service dphys-swapfile
       service:
         name: dphys-swapfile
         state: stopped
