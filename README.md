@@ -13,6 +13,11 @@
   Find synonyms for German terms.
 
 
+* `transmission-session.bash`
+
+  Change settings of a running Transmission instance.
+
+
 * `update-dynamic-name.pl`
 
   Update a DNS record at dynamic.name.
