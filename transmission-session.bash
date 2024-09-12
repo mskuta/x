@@ -113,7 +113,9 @@ else
 fi
 curl \
   --header "X-Transmission-Session-Id: $sessionid" \
-  --json "{$json}" \
+  --data "{$json}" \
+  --header "Content-Type: application/json" \
+  --header "Accept: application/json" \
   --show-error \
   --silent \
   $host:$port/transmission/rpc
