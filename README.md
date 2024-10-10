@@ -18,11 +18,6 @@
   Change settings of a running Transmission instance.
 
 
-* `update-dynamic-name.pl`
-
-  Update a DNS record at dynamic.name.
-
-
 * `wpch.bash`
 
   Change the configuration of a WordPress site.
