@@ -5,7 +5,7 @@
 #   2. mkdir $name
 #   3. cp $name.py $name/__main__.py
 #   4. cd $name
-#   5. python3 -m pip install --requirement=<(printf 'blessings >=1.7,<2\nrequests >=2.28.2,<3\n') --target=.
+#   5. python3 -m pip install --target=. --upgrade 'blessings==1.*' 'requests==2.28.*'
 #   6. output=$(mktemp)
 #   7. python3 -m zipapp "$PWD" --output="$output" --python='/usr/bin/env python3'
 #   8. prefix=$HOME/.local
@@ -31,9 +31,9 @@ class UsageError(Exception):
     pass
 
 
-def main(argv):
+def main(argc, argv):
     try:
-        if len(argv) != 2:
+        if argc != 2:
             mesg = basename(argv[0]) + " TERM"
             raise UsageError(mesg)
 
@@ -78,6 +78,6 @@ def main(argv):
     return ret
 
 
-sys.exit(main(sys.argv))
+sys.exit(main(len(sys.argv), sys.argv))
 
 # vim: ts=4 sts=0 sw=4 et
