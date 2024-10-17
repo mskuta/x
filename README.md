@@ -3,6 +3,11 @@
   Dump values from an XML document by using an XPath expression.
 
 
+* `purge-maven-repo.py`
+
+  Delete the oldest releases from a Maven "groupId/artifactId" directory.
+
+
 * `rirccfilter.gawk`
 
   Extract IP ranges per country from RIR datasets.
