@@ -18,7 +18,7 @@ from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
-from shutil import rmtree
+from shutil import copy2, rmtree
 import logging
 import sys
 
@@ -34,7 +34,7 @@ def main(argc, argv):
         if argc != 2:
             raise RuntimeError("Usage wrong")
         xml_path = Path(argv[1]).expanduser()
-        logging.info("Opening file: %s", xml_path)
+        logging.info("Opening input file: %s", xml_path)
         xml_dict = parsexml(xml_path.read_text(encoding="utf-8"))
         xml_dict_original = deepcopy(xml_dict)
 
@@ -73,8 +73,11 @@ def main(argc, argv):
                     else:
                         xml_dict["metadata"]["versioning"]["versions"]["version"].remove(str(version_to_be_removed))
             if xml_dict != xml_dict_original:
+                xml_path_backup = f"{xml_path}~"
+                logging.info("Creating backup file: %s", xml_path_backup);
+                copy2(xml_path, xml_path_backup)
                 xml_dict["metadata"]["versioning"]["lastUpdated"] = datetime.now().strftime("%Y%m%d%H%M%S")
-                logging.info("Updating file: %s", xml_path)
+                logging.info("Updating input file: %s", xml_path)
                 xml_path.write_text(unparsexml(xml_dict, pretty=True), encoding="utf-8")
         else:
             logging.info("There is only one version, nothing to do.")
