@@ -28,14 +28,14 @@ from xmltodict import parse as parsexml, unparse as unparsexml
 
 
 def main(argc, argv):
-    logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
     try:
         # convert XML from input file into a dictionary so that it is easy to handle
         if argc != 2:
             raise RuntimeError("Usage wrong")
         xml_path = Path(argv[1]).expanduser()
         logging.info("Opening file: %s", xml_path)
-        xml_dict = parsexml(xml_path.read_text(encoding='utf-8'))
+        xml_dict = parsexml(xml_path.read_text(encoding="utf-8"))
         xml_dict_original = deepcopy(xml_dict)
 
         # validate XML without a schema
@@ -58,8 +58,8 @@ def main(argc, argv):
 
                 # keep the 3 highest versions
                 versions_sorted = sorted(versions_by_major[major], reverse=True)
-                logging.info("Versions to be retained: %s", ' '.join(map(str, versions_sorted[:3])))
-                logging.info("Versions to be removed: %s", ' '.join(map(str, versions_sorted[3:])))
+                logging.info("Versions to be retained: %s", " ".join(map(str, versions_sorted[:3])))
+                logging.info("Versions to be removed: %s", " ".join(map(str, versions_sorted[3:])))
                 for version_to_be_removed in versions_sorted[3:]:
                     path_to_be_removed = xml_path.parent / str(version_to_be_removed)
                     logging.info("Removing directory: %s", path_to_be_removed)
@@ -75,7 +75,7 @@ def main(argc, argv):
             if xml_dict != xml_dict_original:
                 xml_dict["metadata"]["versioning"]["lastUpdated"] = datetime.now().strftime("%Y%m%d%H%M%S")
                 logging.info("Updating file: %s", xml_path)
-                xml_path.write_text(unparsexml(xml_dict, pretty=True), encoding='utf-8')
+                xml_path.write_text(unparsexml(xml_dict, pretty=True), encoding="utf-8")
         else:
             logging.info("There is only one version, nothing to do.")
     except Exception as exc:
