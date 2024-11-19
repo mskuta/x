@@ -8,6 +8,11 @@
   Delete the oldest releases from a Maven "groupId/artifactId" directory.
 
 
+* `rir2mmdb.pl`
+
+  Create a MaxMind database file with mappings of IPv4 addresses to country codes from RIR datasets.
+
+
 * `rirccfilter.gawk`
 
   Extract IP ranges per country from RIR datasets.
