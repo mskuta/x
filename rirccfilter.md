@@ -1,6 +1,6 @@
 # Description
 
-Each RIR (Regional Internet Registry) and their parent NRO (Number Resource Organization) publish a daily updated and freely available file called "delegated-extended" containing information on the distribution of Internet number resources. From it, this script extracts IP ranges grouped by country and outputs them in [P2P plaintext format](https://en.wikipedia.org/wiki/PeerGuardian#P2P_plaintext_format).
+Each RIR (Regional Internet Registry) and their parent NRO (Number Resource Organization) publish a daily updated and freely available "delegated-extended file" containing information on the distribution of Internet number resources. From it, this script extracts IP ranges grouped by country and outputs them in [P2P plaintext format](https://en.wikipedia.org/wiki/PeerGuardian#P2P_plaintext_format).
 
 
 # Usage
@@ -19,7 +19,7 @@ Hint: Whereas datasets of individual RIRs contain only records about countries f
 
 Download the latest RIR dataset, filter IP addresses from Germany and store them in file `blocklist`:
 ```shell
-wget -O - -q https://www.nro.net/wp-content/uploads/apnic-uploads/delegated-extended | gawk -f rirccfilter.gawk -v cc=DE >blocklist
+wget -O - -q https://ftp.ripe.net/pub/stats/ripencc/nro-stats/latest/nro-delegated-stats | gawk -f rirccfilter.gawk -v cc=DE >blocklist
 ```
 
 
