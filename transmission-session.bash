@@ -7,25 +7,25 @@
 set -euo pipefail
 
 readonly myname=${BASH_SOURCE[0]##*/}
-host=localhost
-port=9091
+auth= host= port=
 showusage=false
 altspeed=
 seedqueue=
 seedqueuesize=-1
-if args=$(getopt "H:P:aAqQs:h" $*); then
+if args=$(getopt 'c:aAqQs:h' $*); then
 	set -- $args
 
 	# process options
 	while [[ $# -ne 0 ]]; do
 		case $1 in
-			-H)
-				host=$2
-				shift
-				shift
-				;;
-			-P)
-				port=$2
+			-c)
+				if [[ $2 =~ ^((.+:.+)@)?([^:@]+)(:([1-9][0-9]*))?$ ]]; then
+					auth=${BASH_REMATCH[2]}
+					host=${BASH_REMATCH[3]}
+					port=${BASH_REMATCH[5]}
+				else
+					showusage=true
+				fi
 				shift
 				shift
 				;;
@@ -74,10 +74,9 @@ else
 fi
 if [[ $showusage == true ]]; then
 	echo "Usage:"
-	echo "  $myname [-H HOST] [-P PORT] [-a|-A] [-q|-Q] [-s NUMBER]"
+	echo "  $myname [-c [USER:PASS@]HOST[:PORT]] [-a|-A] [-q|-Q] [-s NUMBER]"
 	echo "Options:"
-	echo "  -H  Host of Transmission's RPC socket."
-	echo "  -P  Port of Transmission's RPC socket."
+	echo "  -c  Connection details of Transmission's RPC socket."
 	echo "  -a  Enable alternative speed limits."
 	echo "  -A  Disable alternative speed limits."
 	echo "  -q  Enable seed queue."
@@ -88,8 +87,15 @@ if [[ $showusage == true ]]; then
 	exit 2
 fi
 
+# set curl parameters to be used in every call
+curlopts=()
+curlopts+=("--show-error")
+curlopts+=("--silent")
+[[ -n $auth ]] && curlopts+=("--basic --user $auth")
+curlurl="${host:-localhost}:${port:-9091}/transmission/rpc"
+
 # get current session id
-readonly sessionid=$(curl --head --show-error --silent $host:$port/transmission/rpc | awk '/^X-Transmission-Session-Id:/ { sub(/\r$/, ""); printf("%s", $NF) }')
+readonly sessionid=$(curl --head ${curlopts[*]} $curlurl | awk '/^X-Transmission-Session-Id:/ { sub(/\r$/, ""); printf("%s", $NF) }')
 
 # build an RPC request in JSON
 json=
@@ -112,12 +118,10 @@ else
 	json+='}'
 fi
 curl \
-  --header "X-Transmission-Session-Id: $sessionid" \
   --data "{$json}" \
-  --header "Content-Type: application/json" \
   --header "Accept: application/json" \
-  --show-error \
-  --silent \
-  $host:$port/transmission/rpc
+  --header "Content-Type: application/json" \
+  --header "X-Transmission-Session-Id: $sessionid" \
+  ${curlopts[*]} $curlurl
 
 # vim: ts=8 sts=0 sw=8 noet
