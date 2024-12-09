@@ -3,6 +3,11 @@
   Dump values from an XML document by using an XPath expression.
 
 
+* `git-apply-debian-patch.gawk`
+
+  Apply a Debian patch to a Git repository and commit it with proper metadata.
+
+
 * `purge-maven-repo.py`
 
   Delete the oldest releases from a Maven "groupId/artifactId" directory.
