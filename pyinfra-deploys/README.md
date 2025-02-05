@@ -1,3 +1,8 @@
+* `delete_snap.py`
+
+  Completely remove Snap from Ubuntu Server.
+
+
 * `disable_timers.py`
 
   Disable daily apt download, upgrade and clean activities.
